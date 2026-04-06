@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+	<defs>
+		<linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" style="stop-color:#0a0a2e"/>
+			<stop offset="100%" style="stop-color:#1a0a3e"/>
+		</linearGradient>
+		<linearGradient id="txt" x1="0%" y1="0%" x2="100%" y2="100%">
+			<stop offset="0%" style="stop-color:#00d4ff"/>
+			<stop offset="100%" style="stop-color:#7b2ff7"/>
+		</linearGradient>
+		<filter id="glow">
+			<feGaussianBlur stdDeviation="3" result="blur"/>
+			<feMerge>
+				<feMergeNode in="blur"/>
+				<feMergeNode in="SourceGraphic"/>
+			</feMerge>
+		</filter>
+	</defs>
+	<rect width="500" height="500" fill="url(#bg)"/>
+	<circle cx="250" cy="200" r="140" fill="none" stroke="url(#txt)" stroke-width="1.5" opacity="0.2"/>
+	<circle cx="250" cy="200" r="100" fill="none" stroke="url(#txt)" stroke-width="1" opacity="0.15"/>
+	<circle cx="250" cy="200" r="60" fill="none" stroke="url(#txt)" stroke-width="0.5" opacity="0.1"/>
+	<text x="250" y="235" font-family="monospace" font-size="150" font-weight="bold" fill="url(#txt)" text-anchor="middle" filter="url(#glow)">42</text>
+	<text x="250" y="380" font-family="monospace" font-size="22" fill="url(#txt)" text-anchor="middle" opacity="0.7">TokenizArt42</text>
+	<text x="250" y="415" font-family="monospace" font-size="14" fill="url(#txt)" text-anchor="middle" opacity="0.5">by auzun</text>
+	<line x1="100" y1="450" x2="400" y2="450" stroke="url(#txt)" stroke-width="0.5" opacity="0.2"/>
+</svg>

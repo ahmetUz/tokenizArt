@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>TokenizArt42 - Mint NFT</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: 'Courier New', monospace;
+			background: linear-gradient(135deg, #0a0a2e 0%, #1a0a3e 100%);
+			color: #e0e0e0;
+			min-height: 100vh;
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+		}
+
+		header {
+			text-align: center;
+			padding: 40px 20px 20px;
+		}
+
+		header h1 {
+			font-size: 2.5rem;
+			background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+			-webkit-background-clip: text;
+			-webkit-text-fill-color: transparent;
+			margin-bottom: 8px;
+		}
+
+		header p {
+			color: #888;
+			font-size: 0.9rem;
+		}
+
+		.container {
+			max-width: 600px;
+			width: 90%;
+			margin: 20px auto;
+		}
+
+		.card {
+			background: rgba(255, 255, 255, 0.05);
+			border: 1px solid rgba(255, 255, 255, 0.1);
+			border-radius: 16px;
+			padding: 30px;
+			margin-bottom: 20px;
+		}
+
+		.card h2 {
+			font-size: 1.1rem;
+			color: #00d4ff;
+			margin-bottom: 16px;
+		}
+
+		.info-row {
+			display: flex;
+			justify-content: space-between;
+			padding: 8px 0;
+			border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+			font-size: 0.85rem;
+		}
+
+		.info-row .label {
+			color: #888;
+		}
+
+		.info-row .value {
+			color: #e0e0e0;
+			word-break: break-all;
+			text-align: right;
+			max-width: 60%;
+		}
+
+		button {
+			width: 100%;
+			padding: 14px;
+			border: none;
+			border-radius: 10px;
+			font-family: 'Courier New', monospace;
+			font-size: 1rem;
+			font-weight: bold;
+			cursor: pointer;
+			transition: all 0.3s;
+		}
+
+		button:disabled {
+			opacity: 0.5;
+			cursor: not-allowed;
+		}
+
+		#connectBtn {
+			background: linear-gradient(90deg, #00d4ff, #7b2ff7);
+			color: #fff;
+		}
+
+		#connectBtn:hover:not(:disabled) {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 20px rgba(0, 212, 255, 0.3);
+		}
+
+		#mintBtn {
+			background: linear-gradient(90deg, #7b2ff7, #ff2f7b);
+			color: #fff;
+			margin-top: 10px;
+		}
+
+		#mintBtn:hover:not(:disabled) {
+			transform: translateY(-2px);
+			box-shadow: 0 4px 20px rgba(123, 47, 247, 0.3);
+		}
+
+		#checkOwnerBtn {
+			background: rgba(255, 255, 255, 0.1);
+			color: #00d4ff;
+			border: 1px solid #00d4ff;
+			margin-top: 10px;
+		}
+
+		#checkOwnerBtn:hover:not(:disabled) {
+			background: rgba(0, 212, 255, 0.1);
+		}
+
+		.token-id-input {
+			width: 100%;
+			padding: 10px;
+			border: 1px solid rgba(255, 255, 255, 0.2);
+			border-radius: 8px;
+			background: rgba(255, 255, 255, 0.05);
+			color: #e0e0e0;
+			font-family: 'Courier New', monospace;
+			font-size: 0.9rem;
+			margin-top: 10px;
+		}
+
+		.token-id-input::placeholder {
+			color: #666;
+		}
+
+		#status {
+			text-align: center;
+			padding: 12px;
+			border-radius: 8px;
+			margin-top: 16px;
+			font-size: 0.85rem;
+			display: none;
+		}
+
+		#status.success {
+			display: block;
+			background: rgba(0, 255, 100, 0.1);
+			border: 1px solid rgba(0, 255, 100, 0.3);
+			color: #00ff64;
+		}
+
+		#status.error {
+			display: block;
+			background: rgba(255, 50, 50, 0.1);
+			border: 1px solid rgba(255, 50, 50, 0.3);
+			color: #ff5050;
+		}
+
+		#status.loading {
+			display: block;
+			background: rgba(0, 212, 255, 0.1);
+			border: 1px solid rgba(0, 212, 255, 0.3);
+			color: #00d4ff;
+		}
+
+		#nftPreview {
+			display: none;
+			text-align: center;
+			margin-top: 16px;
+		}
+
+		#nftPreview img {
+			max-width: 300px;
+			border-radius: 12px;
+			border: 2px solid rgba(123, 47, 247, 0.5);
+		}
+
+		#nftPreview p {
+			margin-top: 8px;
+			color: #888;
+			font-size: 0.8rem;
+		}
+
+		footer {
+			text-align: center;
+			padding: 30px;
+			color: #555;
+			font-size: 0.75rem;
+		}
+
+		footer a {
+			color: #00d4ff;
+			text-decoration: none;
+		}
+	</style>
+</head>
+<body>
+	<header>
+		<h1>TokenizArt42</h1>
+		<p>ERC-721 NFT Collection on Sepolia Testnet</p>
+	</header>
+
+	<div class="container">
+		<!-- Wallet Connection -->
+		<div class="card">
+			<h2>Wallet</h2>
+			<div class="info-row">
+				<span class="label">Status</span>
+				<span class="value" id="walletStatus">Not connected</span>
+			</div>
+			<div class="info-row">
+				<span class="label">Address</span>
+				<span class="value" id="walletAddress">-</span>
+			</div>
+			<div class="info-row">
+				<span class="label">Network</span>
+				<span class="value" id="networkName">-</span>
+			</div>
+			<button id="connectBtn" onclick="connectWallet()">Connect MetaMask</button>
+		</div>
+
+		<!-- Contract Info -->
+		<div class="card">
+			<h2>Collection Info</h2>
+			<div class="info-row">
+				<span class="label">Name</span>
+				<span class="value" id="collectionName">-</span>
+			</div>
+			<div class="info-row">
+				<span class="label">Symbol</span>
+				<span class="value" id="collectionSymbol">-</span>
+			</div>
+			<div class="info-row">
+				<span class="label">Minted</span>
+				<span class="value" id="totalSupply">-</span>
+			</div>
+			<div class="info-row">
+				<span class="label">Max Supply</span>
+				<span class="value" id="maxSupply">-</span>
+			</div>
+		</div>
+
+		<!-- Mint -->
+		<div class="card">
+			<h2>Mint NFT (On-Chain SVG)</h2>
+			<p style="color: #888; font-size: 0.8rem; margin-bottom: 12px;">
+				Mint a unique generative art NFT with "42" stored entirely on-chain.
+			</p>
+			<button id="mintBtn" onclick="mintNFT()" disabled>Mint NFT</button>
+			<div id="status"></div>
+			<div id="nftPreview">
+				<img id="nftImage" src="" alt="NFT Preview">
+				<p id="nftInfo"></p>
+			</div>
+		</div>
+
+		<!-- Verify Owner -->
+		<div class="card">
+			<h2>Verify NFT Owner</h2>
+			<input type="number" class="token-id-input" id="tokenIdInput" placeholder="Enter Token ID (e.g. 0)" min="0">
+			<button id="checkOwnerBtn" onclick="checkOwner()" disabled>Check Owner</button>
+			<div id="ownerResult" style="margin-top: 10px; font-size: 0.85rem; color: #888;"></div>
+		</div>
+	</div>
+
+	<footer>
+		<p>TokenizArt42 by auzun | <a href="https://sepolia.etherscan.io/" target="_blank">Etherscan Sepolia</a></p>
+	</footer>
+
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
+	<script>
+		/**
+		 * CONTRACT_ADDRESS: update this after deploying the contract.
+		 * Read from deployment/addresses.json or set manually.
+		 */
+		const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
+
+		/**
+		 * Minimal ABI — only the functions we need for the frontend.
+		 * This avoids importing the full ABI file.
+		 */
+		const CONTRACT_ABI = [
+			"function name() view returns (string)",
+			"function symbol() view returns (string)",
+			"function totalSupply() view returns (uint256)",
+			"function MAX_SUPPLY() view returns (uint256)",
+			"function ownerOf(uint256 tokenId) view returns (address)",
+			"function tokenURI(uint256 tokenId) view returns (string)",
+			"function mintOnChain(address to) returns (uint256)",
+			"function mintWithURI(address to, string uri) returns (uint256)",
+			"function owner() view returns (address)",
+			"event NFTMinted(uint256 indexed tokenId, address indexed to, string tokenURI)"
+		];
+
+		let provider;
+		let signer;
+		let contract;
+
+		/**
+		 * Connects the user's MetaMask wallet and initializes the contract.
+		 * Switches to Sepolia if the user is on the wrong network.
+		 */
+		async function connectWallet() {
+			if (!window.ethereum) {
+				showStatus("MetaMask not detected. Please install it.", "error");
+				return;
+			}
+
+			try {
+				/* Request wallet connection */
+				await window.ethereum.request({ method: "eth_requestAccounts" });
+
+				provider = new ethers.BrowserProvider(window.ethereum);
+				signer = await provider.getSigner();
+				const address = await signer.getAddress();
+				const network = await provider.getNetwork();
+
+				/* Check Sepolia network (chainId 11155111) */
+				if (network.chainId !== 11155111n) {
+					showStatus("Please switch to Sepolia testnet in MetaMask.", "error");
+					try {
+						await window.ethereum.request({
+							method: "wallet_switchEthereumChain",
+							params: [{ chainId: "0xaa36a7" }]
+						});
+						/* Reconnect after switch */
+						provider = new ethers.BrowserProvider(window.ethereum);
+						signer = await provider.getSigner();
+					} catch (e) {
+						return;
+					}
+				}
+
+				/* Update UI */
+				document.getElementById("walletStatus").textContent = "Connected";
+				document.getElementById("walletAddress").textContent = address.slice(0, 6) + "..." + address.slice(-4);
+				document.getElementById("networkName").textContent = "Sepolia";
+				document.getElementById("connectBtn").textContent = "Connected";
+				document.getElementById("connectBtn").disabled = true;
+				document.getElementById("mintBtn").disabled = false;
+				document.getElementById("checkOwnerBtn").disabled = false;
+
+				/* Load contract info */
+				contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
+				await loadContractInfo();
+
+			} catch (error) {
+				showStatus("Connection failed: " + error.message, "error");
+			}
+		}
+
+		/**
+		 * Loads and displays contract information (name, symbol, supply).
+		 */
+		async function loadContractInfo() {
+			try {
+				const [name, symbol, supply, maxSupply] = await Promise.all([
+					contract.name(),
+					contract.symbol(),
+					contract.totalSupply(),
+					contract.MAX_SUPPLY()
+				]);
+
+				document.getElementById("collectionName").textContent = name;
+				document.getElementById("collectionSymbol").textContent = symbol;
+				document.getElementById("totalSupply").textContent = supply.toString() + " / " + maxSupply.toString();
+				document.getElementById("maxSupply").textContent = maxSupply.toString();
+			} catch (error) {
+				console.error("Failed to load contract info:", error);
+			}
+		}
+
+		/**
+		 * Mints a new on-chain NFT to the connected wallet.
+		 * Waits for the transaction to be confirmed and displays the result.
+		 */
+		async function mintNFT() {
+			if (!contract) return;
+
+			try {
+				document.getElementById("mintBtn").disabled = true;
+				showStatus("Sending mint transaction...", "loading");
+
+				const address = await signer.getAddress();
+				const tx = await contract.mintOnChain(address);
+				showStatus("Transaction sent. Waiting for confirmation... TX: " + tx.hash.slice(0, 10) + "...", "loading");
+
+				const receipt = await tx.wait();
+				showStatus("NFT minted successfully!", "success");
+
+				/* Refresh supply */
+				await loadContractInfo();
+
+				/* Try to display the minted NFT */
+				const supply = await contract.totalSupply();
+				const tokenId = Number(supply) - 1;
+				await displayNFT(tokenId);
+
+			} catch (error) {
+				let msg = error.message;
+				if (msg.includes("max supply")) {
+					msg = "Max supply reached (42 NFTs).";
+				} else if (msg.includes("Ownable")) {
+					msg = "Only the contract owner can mint.";
+				}
+				showStatus("Mint failed: " + msg, "error");
+			} finally {
+				document.getElementById("mintBtn").disabled = false;
+			}
+		}
+
+		/**
+		 * Checks and displays the owner of a specific NFT by token ID.
+		 */
+		async function checkOwner() {
+			if (!contract) return;
+
+			const tokenId = document.getElementById("tokenIdInput").value;
+			if (tokenId === "") {
+				document.getElementById("ownerResult").textContent = "Please enter a token ID.";
+				return;
+			}
+
+			try {
+				const owner = await contract.ownerOf(tokenId);
+				document.getElementById("ownerResult").innerHTML =
+					'Owner of #' + tokenId + ':<br><span style="color: #00d4ff;">' + owner + '</span>';
+
+				await displayNFT(Number(tokenId));
+			} catch (error) {
+				document.getElementById("ownerResult").textContent = "Token #" + tokenId + " does not exist.";
+			}
+		}
+
+		/**
+		 * Fetches and displays the SVG image of a minted NFT.
+		 * Decodes the on-chain base64 metadata to extract the SVG.
+		 */
+		async function displayNFT(tokenId) {
+			try {
+				const uri = await contract.tokenURI(tokenId);
+
+				/* Decode the base64 JSON metadata */
+				const base64Data = uri.replace("data:application/json;base64,", "");
+				const json = JSON.parse(atob(base64Data));
+
+				/* Display the SVG image */
+				const preview = document.getElementById("nftPreview");
+				document.getElementById("nftImage").src = json.image;
+				document.getElementById("nftInfo").textContent = json.name + " — by " + json.artist;
+				preview.style.display = "block";
+			} catch (error) {
+				console.error("Failed to display NFT:", error);
+			}
+		}
+
+		/**
+		 * Updates the status message display.
+		 * @param {string} message - Text to display
+		 * @param {string} type - "success", "error", or "loading"
+		 */
+		function showStatus(message, type) {
+			const el = document.getElementById("status");
+			el.textContent = message;
+			el.className = type;
+		}
+
+		/* Auto-connect if MetaMask is already authorized */
+		if (window.ethereum) {
+			window.ethereum.on("accountsChanged", () => location.reload());
+			window.ethereum.on("chainChanged", () => location.reload());
+		}
+	</script>
+</body>
+</html>

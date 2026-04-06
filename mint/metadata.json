@@ -1,0 +1,20 @@
+{
+	"name": "TokenizArt42 #0",
+	"description": "Generative art NFT from the TokenizArt42 collection. Each piece features unique colors derived from its token ID.",
+	"artist": "auzun",
+	"image": "ipfs://YOUR_IMAGE_CID_HERE",
+	"attributes": [
+		{
+			"trait_type": "Token ID",
+			"value": "0"
+		},
+		{
+			"trait_type": "Collection",
+			"value": "42"
+		},
+		{
+			"trait_type": "Generation",
+			"value": "IPFS"
+		}
+	]
+}
