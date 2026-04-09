@@ -285,15 +285,19 @@
 		 */
 		let CONTRACT_ADDRESS = null;
 
+		/** Fallback address in case addresses.json cannot be fetched (e.g. file:// protocol) */
+		const FALLBACK_ADDRESS = "0xCE6c212603035aB087498086cae32DF7c41519bF";
+
 		/**
 		 * Loads the contract address from deployment/addresses.json.
-		 * Shows an error if the file does not exist or has no address.
+		 * Falls back to hardcoded address if fetch fails (file:// or CORS).
+		 * Shows an error only if no address is available at all.
 		 */
 		async function loadContractAddress() {
 			try {
 				const response = await fetch("../../deployment/addresses.json");
 				if (!response.ok) {
-					throw new Error("addresses.json not found (HTTP " + response.status + ")");
+					throw new Error("HTTP " + response.status);
 				}
 				const data = await response.json();
 				if (!data.nft) {
@@ -301,9 +305,8 @@
 				}
 				CONTRACT_ADDRESS = data.nft;
 			} catch (error) {
-				showStatus("Error: " + error.message + ". Deploy the contract first.", "error");
-				document.getElementById("connectBtn").disabled = true;
-				throw error;
+				console.warn("Could not load addresses.json (" + error.message + "), using fallback address.");
+				CONTRACT_ADDRESS = FALLBACK_ADDRESS;
 			}
 		}
 
