@@ -52,7 +52,7 @@ generative art with the number "42", created either on-chain or stored via IPFS.
 ## Deployment
 
 - **Network**: Sepolia Testnet (chainId: 11155111)
-- **Contract address**: *(updated after deployment)*
+- **Contract address**: `0xCE6c212603035aB087498086cae32DF7c41519bF`
 - **Explorer**: https://sepolia.etherscan.io/
 
 ## Quick Start
