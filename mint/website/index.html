@@ -280,10 +280,32 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.4/ethers.umd.min.js"></script>
 	<script>
 		/**
-		 * CONTRACT_ADDRESS: update this after deploying the contract.
-		 * Read from deployment/addresses.json or set manually.
+		 * CONTRACT_ADDRESS: loaded dynamically from deployment/addresses.json.
+		 * Falls back to error if the file is not found.
 		 */
-		const CONTRACT_ADDRESS = "YOUR_CONTRACT_ADDRESS_HERE";
+		let CONTRACT_ADDRESS = null;
+
+		/**
+		 * Loads the contract address from deployment/addresses.json.
+		 * Shows an error if the file does not exist or has no address.
+		 */
+		async function loadContractAddress() {
+			try {
+				const response = await fetch("../../deployment/addresses.json");
+				if (!response.ok) {
+					throw new Error("addresses.json not found (HTTP " + response.status + ")");
+				}
+				const data = await response.json();
+				if (!data.nft) {
+					throw new Error("No contract address in addresses.json");
+				}
+				CONTRACT_ADDRESS = data.nft;
+			} catch (error) {
+				showStatus("Error: " + error.message + ". Deploy the contract first.", "error");
+				document.getElementById("connectBtn").disabled = true;
+				throw error;
+			}
+		}
 
 		/**
 		 * Minimal ABI — only the functions we need for the frontend.
@@ -314,6 +336,15 @@
 			if (!window.ethereum) {
 				showStatus("MetaMask not detected. Please install it.", "error");
 				return;
+			}
+
+			/* Load contract address if not already loaded */
+			if (!CONTRACT_ADDRESS) {
+				try {
+					await loadContractAddress();
+				} catch (e) {
+					return;
+				}
 			}
 
 			try {
